@@ -1,76 +1,110 @@
 
-# EX 3C Tug of War problem - Backtracking.
+# EX 3D Sudoku solver - Backtracking.
 ## DATE:15/09/25
 ## AIM:
-To write a Java program to for given constraints.
-Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
-Example 1:
-Input: Enter the number of elements: 4
-Enter the elements of the array:
-1 5 11 5
-Output: true
-Explanation: The array can be partitioned as [1, 5, 5] and [11].
+To write a Java program to solve a Sudoku puzzle by filling the empty cells.
 
-Constraints:
+For example:
+<img width="357" height="322" alt="image" src="https://github.com/user-attachments/assets/334b8c39-d547-4743-aca0-de92e38bdd1c" />
 
-1 <= nums.length <= 200
-1 <= nums[i] <= 100
+
 
 ## Algorithm
-1.Start and read the array elements.
+1.Start and read the 9×9 Sudoku grid (use 0 for empty cells).
 
-2.Calculate the total sum of all elements.
+2.Find the next empty cell in the board.
 
-3.If the total sum is odd, return false (cannot partition equally).
+3.Try placing digits 1–9 and check if placement is safe (row, column, and 3×3 box).
 
-4.Use dynamic programming to check if any subset sums to totalSum / 2.
+4.If safe, place the number and recursively solve the next cell; if not, backtrack.
 
-5.If such a subset exists, return true; otherwise, return false.
-
+5.Continue until the board is completely filled and display the solved Sudoku. 
 
 ## Program:
 ```
 /*
 Program to implement Reverse a String
 Developed by: DHARSHAN D
-RegisterNumber: 212223230045Developed by: ADITHYA V
-Register Number:  212223110001
+RegisterNumber: 212223230045
 */
-
 import java.util.Scanner;
-public class Solution {
-    public boolean canPartition(int[] nums) {
-        //Type your code here
-        if(nums.length==0)
-        return false;
-        int totalSum=0;
-        for(int num:nums){
-            totalSum+=num;
+
+public class SudokuSolver {
+
+    // Check if it's safe to place the number
+    static boolean isSafe(int[][] board, int row, int col, int num) {
+        // Check row and column
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == num || board[i][col] == num)
+                return false;
         }
-        if(totalSum%2!=0)
-        return false;
-        int subSetSum=totalSum/2;
-        boolean[] dp=new boolean[subSetSum+1];
-        dp[0]=true;
-        for(int curr:nums){
-            for(int j=subSetSum;j>=curr;j--){
-                dp[j]|=dp[j-curr];
+
+        // Check 3x3 subgrid
+        int startRow = row - row % 3;
+        int startCol = col - col % 3;
+
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (board[startRow + i][startCol + j] == num)
+                    return false;
+
+        return true;
+    }
+
+    // Recursive backtracking solver
+    static boolean solveSudoku(int[][] board, int row, int col) {
+        //Type your code here
+        if(row==8 && col==9)
+        return true;
+        if(col==9){
+            row++;
+            col=0;
+        }
+        if(board[row][col]!=0)
+        return solveSudoku(board,row,col+1);
+        for(int num=1;num<=9;num++){
+            if(isSafe(board,row,col,num)){
+                board[row][col]=num;
+                if(solveSudoku(board,row,col+1))
+                return true;
+                board[row][col]=0;
             }
         }
-        return dp[subSetSum];
-        
-        
+        return false;
     }
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Solution sol = new Solution();
-        int n = scanner.nextInt();
-        int[] nums = new int[n];
-        for (int i = 0; i < n; i++) {
-            nums[i] = scanner.nextInt();
+
+    // Utility to print the board
+    static void printBoard(int[][] board) {
+        for (int[] row : board) {
+            for (int val : row)
+                System.out.print(val + " ");
+            System.out.println();
         }
-        boolean canBePartitioned = sol.canPartition(nums);
-        System.out.println(canBePartitioned);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int[][] board = new int[9][9];
+
+      //  System.out.println("Enter the Sudoku puzzle row by row (use 0 for empty cells):");
+
+        for (int i = 0; i < 9; i++) {
+            //System.out.print("Enter row " + (i + 1) + ": ");
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = sc.nextInt();
+            }
+        }
+
+      //  System.out.println("\nSolving...\n");
+
+        if (solveSudoku(board, 0, 0)) {
+            System.out.println("Solved Sudoku:");
+            printBoard(board);
+        } else {
+            System.out.println("No solution exists.");
+        }
+
+        sc.close();
     }
 }
 
@@ -78,7 +112,7 @@ public class Solution {
 
 ## Output:
 
-<img width="401" height="232" alt="image" src="https://github.com/user-attachments/assets/25f33a98-9e09-452b-a2e8-113f01e309b1" />
+<img width="644" height="591" alt="image" src="https://github.com/user-attachments/assets/fab2764a-0973-46bb-8996-f2d23c0df4ad" />
 
 
 ## Result:
